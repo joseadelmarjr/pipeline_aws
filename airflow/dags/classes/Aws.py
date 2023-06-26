@@ -22,22 +22,3 @@ class S3:
         s3 = self.__get_connection()
         object = s3.Object(self.bucket, file_path)
         object.put(Body=content)
-
-
-# def escrever_em_arquivo_s3(bucket, nome_arquivo, conteudo):
-#     access_key = "AKIARWZ2U4JE5UXAUGOX"
-#     secret_key = "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"
-#     s3 = boto3.resource(
-#         "s3", aws_access_key_id=access_key, aws_secret_access_key=secret_key
-#     )
-#     objeto = s3.Object(bucket, nome_arquivo)
-#     objeto.put(Body=conteudo)
-
-
-# # Configurações do S3
-# nome_bucket = "datalake-igti-example"  # Substitua pelo nome do seu bucket
-# nome_arquivo = "caminho/nome-do-arquivo.txt"  # Substitua pelo caminho e nome do arquivo desejado no bucket
-# conteudo_arquivo = "Conteúdo a ser escrito no arquivo"
-
-# # Escrever o conteúdo no arquivo do S3
-# escrever_em_arquivo_s3(nome_bucket, nome_arquivo, conteudo_arquivo)
