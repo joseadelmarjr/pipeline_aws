@@ -68,7 +68,7 @@ services:
     <<: *airflow-common
     command: webserver
     ports:
-      - 8080:8080
+      - 8181:8080
     healthcheck:
       test:
         [
@@ -271,6 +271,48 @@ services:
     entrypoint: >
       /bin/sh -c " /usr/bin/mc config host rm local; /usr/bin/mc config host add --quiet --api s3v4 local http://s3:9000 minio_access_key minio_secret_key; /usr/bin/mc rb --force local/${AWS_S3_BUCKET}/; /usr/bin/mc mb --quiet local/${AWS_S3_BUCKET}/; /usr/bin/mc policy set public local/${AWS_S3_BUCKET};
         "
+
+  spark:
+    build:
+      context: .
+      dockerfile: ./config/docker/Dockerfile_spark
+      # target: development
+      # image: docker.io/bitnami/spark:3.3
+      # command: bash -c "apt-get update && apt-get install -y openjdk-8-jdk-headless"
+    restart: always
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./airflow/keys/:/home/keys/
+      - ./airflow/dags/drivers/:/home/drivers/
+
+  spark-worker:
+    build:
+      context: .
+      dockerfile: ./config/docker/Dockerfile_spark
+    # target: development
+    # image: docker.io/bitnami/spark:3.3
+    # command: bash -c "apt-get update && apt-get install -y openjdk-8-jdk-headless"
+    restart: always
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=3
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    volumes:
+      - ./airflow/keys/:/home/keys/
 volumes:
   postgres-db-volume:
   minio: {}

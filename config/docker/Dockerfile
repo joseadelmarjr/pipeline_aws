@@ -9,14 +9,15 @@ ENV AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE="America/Sao_Paulo"
 ENV AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG=1
 
 USER root
+
 RUN apt-get update && \
   apt-get install -y \
   python3-distutils \
   python3-apt \
-  libpq-dev \
-  build-essential \
-  wkhtmltopdf \
-  xvfb
+  ca-certificates-java \ 
+  build-essential 
+
+RUN apt-get install -y openjdk-17-jdk
 
 USER airflow
 RUN pip install --upgrade pip setuptools wheel
